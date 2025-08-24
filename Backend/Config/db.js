@@ -1,6 +1,7 @@
-const {Pool} = require('pg');
+const {Pool , types} = require('pg');
 require('dotenv').config();
 
+types.setTypeParser(1082, (val) => val);
  // Connect to PostgreSQL database
 const userDB = new  Pool({
  user: process.env.use_Name || 'postgres',    
@@ -9,14 +10,6 @@ const userDB = new  Pool({
   password: process.env.password_Name || 'Tushar@08',
   port: Number (process.env.port_Name)  || 5432,
 });
-
-
-
-
-
-
-
-
 
 
 userDB.query(`
@@ -35,8 +28,5 @@ userDB.query(`
       console.log('Table created successfully');
     }
   });
-
-
-
 
 module.exports = userDB
