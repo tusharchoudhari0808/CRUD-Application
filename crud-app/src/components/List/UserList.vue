@@ -1,13 +1,21 @@
 <template>
   <div class="p-6">
     <h2 class="text-2xl font-bold mb-4 text-gray-700">User List</h2>
-    <!-- //Router path.... -->
 
     <router-link
       to="/create"
       class="bg-blue-600 text-white px-4 py-2 rounded mb-4 inline-block"
-      >Add User</router-link
     >
+      Add User
+    </router-link>
+
+    <!-- Name search -->
+    <input
+      type="text"
+      placeholder="Search by name..."
+      class="border p-2 mb-4 w-full max-w-md"
+      v-model="searchName"
+    />
 
     <div class="overflow-x-auto">
       <table
@@ -50,10 +58,6 @@
         </tbody>
       </table>
     </div>
-
-    <div class="flex justify-end mt-4">
-      
-    </div>
   </div>
 </template>
 
@@ -64,19 +68,42 @@ export default {
   name: "UserList",
   data() {
     return {
-      firstName: "",
-      lastName: "",
-      dob: "",
-      mobile: "",
-      address: "",
-      //editingUserId: null,
       users: [],
+      searchName: "",
     };
   },
+  watch: {
+    searchName: "handleSearch", // watch search input
+  },
   mounted() {
-    this.getUsers();
+    this.getUsers(); // fetch all users initially
   },
   methods: {
+    //  Trigger search if text length > 2
+    async handleSearch() {
+      if (this.searchName.length > 2) {
+        this.searchUsers();
+      } else if (this.searchName.length === 0) {
+        this.getUsers();
+      }
+    },
+
+    // Search by name
+    async searchUsers() {
+      try {
+        const res = await axios.get("http://localhost:3000/api/users/search", {
+          params: {
+            first_name: this.searchName || null, // matches backend param
+          },
+        });
+        this.users = res.data;
+      } catch (err) {
+        console.error("Error searching users:", err);
+        this.users = [];
+      }
+    },
+
+    // Get all users
     async getUsers() {
       try {
         const res = await axios.get(`http://localhost:3000/api/users/getAll`);
@@ -85,10 +112,14 @@ export default {
         console.error("Error fetching users:", err);
       }
     },
+
+    // Format date (YYYY-MM-DD → DD/MM/YYYY)
     formatDate(dateStr) {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("en-GB");
+      if (!dateStr) return "";
+      const [year, month, day] = dateStr.split("-");
+      return `${day}/${month}/${year}`;
     },
+
     editUser(user) {
       this.$router.push(`/create/${user.user_id}`);
     },

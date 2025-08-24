@@ -1,6 +1,33 @@
 const DB = require('../config/db.js');
 
 
+
+
+// search data ....
+
+exports.searchUsers = async (req, res) => {
+  const { first_name } = req.query;
+
+  try {
+    const result = await DB.query(
+      `SELECT * FROM users
+       WHERE ($1::text IS NULL OR first_name ILIKE $1)`,
+      [first_name ? `%${first_name}%` : null]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No users found" });
+    }
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error searching users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+
 // Create User
 exports.createUser = async (req, res) => {
   const { First_Name, Last_Name, DOB, Mobile_Number, Address } = req.body;
