@@ -17,7 +17,16 @@
       v-model="searchName"
     />
 
-   
+    
+
+        <!-- Sort Dropdown -->
+    <div class="mb-4">
+      <select v-model="sortKey" @change="applySort" class="border p-2 rounded">
+        <option value="">Sort By</option>
+        <option value="first_name">First Name</option>
+        <option value="dob">DOB</option>
+      </select>
+    </div>
 
     <div class="overflow-x-auto">
       <table
@@ -94,7 +103,7 @@ export default {
       searchName: "",
       page: 1,
       limit: 5,
-      sortId: "",
+      sortKey: "",
     };
   },
   watch: {
@@ -128,7 +137,7 @@ export default {
       }
     },
 
-    //  Trigger search if text length > 2
+    //  Trigger search  text length > 2
     async handleSearch() {
       if (this.searchName.length > 2) {
         this.searchUsers();
@@ -153,7 +162,23 @@ export default {
       }
     },
 
-    
+
+
+    //  sort to Name and DOB...........
+    applySort() {
+      if (this.sortKey === "first_name") {
+        this.users.sort((x, y) =>
+          x.first_name.toLowerCase().localeCompare(y.first_name.toLowerCase())
+        );
+      } else if (this.sortKey === "dob") {
+        this.users.sort((x, y) => {
+          const A = new Date(x.dob.split("-").reverse().join("-"));
+          const B = new Date(y.dob.split("-").reverse().join("-"));
+          return A - B;
+        });
+      }
+      this.page = 1; // reset to first page after sort
+    },
 
     // Get all users
     async getUsers() {
@@ -185,4 +210,4 @@ export default {
     },
   },
 };
-</script> 
+</script>
