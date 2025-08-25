@@ -33,7 +33,7 @@ exports.createUser = async (req, res) => {
   const { First_Name, Last_Name, DOB, Mobile_Number, Address } = req.body;
 
   try {
-    // ✅ Check if mobile number already exists
+    //  Check to mobile number already exists ...
     const checkMobile = await DB.query(
       "SELECT * FROM users WHERE Mobile_Number = $1",
       [Mobile_Number]
@@ -43,7 +43,7 @@ exports.createUser = async (req, res) => {
       return res.status(400).json({ error: "Mobile number already exists" });
     }
 
-    // ✅ Insert only if unique
+    //  Insert user
     const result = await DB.query(
       `INSERT INTO users (First_Name, Last_Name, DOB, Mobile_Number, Address)
        VALUES ($1, $2, $3, $4, $5) RETURNING *`,
@@ -72,7 +72,7 @@ exports.getUserById = async (req, res) => {
     }
 
     const user = result.rows[0];
-    //  dob is already YYYY-MM-DD string, no conversion needed
+   
     res.json(user);
   } catch (error) {
     console.error("Error fetching user:", error);
@@ -84,7 +84,7 @@ exports.getUserById = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const result = await DB.query("SELECT * FROM users ORDER BY user_id ASC");
-    //  dob already correct string
+   
     res.json(result.rows);
   } catch (error) {
     console.error("Error fetching users:", error);

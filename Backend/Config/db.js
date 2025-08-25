@@ -4,14 +4,14 @@ require('dotenv').config();
 types.setTypeParser(1082, (val) => val);
  // Connect to PostgreSQL database
 const userDB = new  Pool({
- user: process.env.use_Name || 'postgres',    
-  host: process.env.host_Name || 'localhost',
-  database: process.env.database_Name || 'mydb',
-  password: process.env.password_Name || 'Tushar@08',
-  port: Number (process.env.port_Name)  || 5432,
+ user: process.env.user_Name,     
+  host: process.env.user_Host, 
+  database: process.env.user_Database, 
+  password:  process.env.user_Password, 
+  port: Number (process.env.user_Port),  
 });
 
-
+// create table if not  exists...
 userDB.query(`
   CREATE TABLE IF NOT EXISTS users (
   USER_ID SERIAL PRIMARY KEY,
