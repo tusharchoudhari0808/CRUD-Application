@@ -1,65 +1,86 @@
+
+
 <template>
-  <div class="max-w-20x10 mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">User Form</h1>
+  <div class="max-w-4xl mx-auto p-8">
+    <h1 class="text-4xl font-extrabold mb-8 text-center text-blue-700 tracking-wide">
+      User Form
+    </h1>
 
     <form
       @submit.prevent="handleSubmit"
-      class="grid grid-cols-1 gap-4 bg-white p-6 rounded-xl"
+      class="bg-white shadow-lg rounded-2xl p-8 grid grid-cols-1 md:grid-cols-2 gap-6"
     >
+      <!-- First Name -->
       <div>
+        <label class="block text-gray-700 font-medium mb-2">First Name</label>
         <input
           v-model="firstName"
-          placeholder="First Name"
-          class="w-full px-4 py-2 border rounded-md"
+          placeholder="Enter first name"
+          class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
         />
         <p class="text-red-500 text-sm mt-1" v-if="errors.firstName">
           {{ errors.firstName }}
         </p>
       </div>
+
+      <!-- Last Name -->
       <div>
+        <label class="block text-gray-700 font-medium mb-2">Last Name</label>
         <input
           v-model="lastName"
-          placeholder="Last Name"
-          class="w-full px-4 py-2 border rounded-md"
+          placeholder="Enter last name"
+          class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
         />
         <p class="text-red-500 text-sm mt-1" v-if="errors.lastName">
           {{ errors.lastName }}
         </p>
       </div>
+
+      <!-- DOB -->
       <div>
+        <label class="block text-gray-700 font-medium mb-2">Date of Birth</label>
         <input
           v-model="dob"
           type="date"
-          class="w-full px-4 py-2 border rounded-md"
+          class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
         />
         <p class="text-red-500 text-sm mt-1" v-if="errors.dob">
           {{ errors.dob }}
         </p>
       </div>
+
+      <!-- Mobile -->
       <div>
+        <label class="block text-gray-700 font-medium mb-2">Mobile Number</label>
         <input
           v-model="mobile"
-          placeholder="Mobile (10 digits)"
-          class="w-full px-4 py-2 border rounded-md"
+          placeholder="10-digit mobile number"
+          class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
         />
         <p class="text-red-500 text-sm mt-1" v-if="errors.mobile">
           {{ errors.mobile }}
         </p>
       </div>
-      <div class="col-span-1 md:col-span-2">
+
+      <!-- Address -->
+      <div class="md:col-span-2">
+        <label class="block text-gray-700 font-medium mb-2">Address</label>
         <textarea
           v-model="address"
-          placeholder="Address"
-          class="w-full px-4 py-2 border rounded-md"
+          placeholder="Enter your address"
+          rows="3"
+          class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
         ></textarea>
         <p class="text-red-500 text-sm mt-1" v-if="errors.address">
           {{ errors.address }}
         </p>
       </div>
-      <div class="col-span-2 text-right">
+
+      <!-- Submit Button -->
+      <div class="md:col-span-2 text-right">
         <button
           type="submit"
-          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-lg transition transform hover:scale-105"
         >
           {{ id ? "Update User" : "Add User" }}
         </button>
@@ -67,6 +88,7 @@
     </form>
   </div>
 </template>
+
 
 <script>
 import axios from "axios";
@@ -86,7 +108,7 @@ export default {
   },
   mounted() {
     if (this.id) {
-      this.loadUser(); // If editing, load user data
+      this.loadUser(); 
     }
   },
   methods: {
