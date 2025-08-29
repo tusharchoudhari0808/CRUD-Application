@@ -1,13 +1,32 @@
 <template>
   <div class="p-6">
     <h2 class="text-2xl font-bold mb-4 text-gray-700">User List</h2>
-    <!-- //Router path.... -->
 
     <router-link
       to="/create"
       class="bg-blue-600 text-white px-4 py-2 rounded mb-4 inline-block"
-      >Add User</router-link
     >
+      Add User
+    </router-link>
+
+    <!-- Name search -->
+    <input
+      type="text"
+      placeholder="Search by name..."
+      class="border p-2 mb-4 w-full max-w-md"
+      v-model="searchName"
+    />
+
+    
+
+        <!-- Sort Dropdown -->
+    <div class="mb-4">
+      <select v-model="sortKey" @change="applySort" class="border p-2 rounded">
+        <option value="">Sort By</option>
+        <option value="first_name">First Name</option>
+        <option value="dob">DOB</option>
+      </select>
+    </div>
 
     <div class="overflow-x-auto">
       <table
@@ -25,7 +44,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in users" :key="user.user_id">
+          <!-- Use paginatedUsers here -->
+          <tr v-for="user in paginatedUsers" :key="user.user_id">
             <td class="p-3 border">{{ user.user_id }}</td>
             <td class="p-3 border">{{ user.first_name }}</td>
             <td class="p-3 border">{{ user.last_name }}</td>
@@ -49,10 +69,25 @@
           </tr>
         </tbody>
       </table>
-    </div>
 
-    <div class="flex justify-end mt-4">
-      
+      <!-- Pagination -->
+      <div class="flex items-center gap-4 mt-4">
+        <button
+          @click="prevPage"
+          :disabled="page === 1"
+          class="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+        <span>Page {{ page }} of {{ totalPages }}</span>
+        <button
+          @click="nextPage"
+          :disabled="page === totalPages"
+          class="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -64,31 +99,105 @@ export default {
   name: "UserList",
   data() {
     return {
-      firstName: "",
-      lastName: "",
-      dob: "",
-      mobile: "",
-      address: "",
-      //editingUserId: null,
       users: [],
+      searchName: "",
+      page: 1,
+      limit: 5,
+      sortKey: "",
     };
   },
+  watch: {
+    searchName: "handleSearch", // watch search input
+  },
   mounted() {
-    this.getUsers();
+    this.getUsers(); // fetch all users initially
+  },
+  computed: {
+    //  totale pages
+    totalPages() {
+      return Math.ceil(this.users.length / this.limit) || 1;
+    },
+
+    //  Paginate users
+    paginatedUsers() {
+      const start = (this.page - 1) * this.limit;
+      const end = start + this.limit;
+      return this.users.slice(start, end);
+    },
   },
   methods: {
+    nextPage() {
+      if (this.page < this.totalPages) {
+        this.page++;
+      }
+    },
+    prevPage() {
+      if (this.page > 1) {
+        this.page--;
+      }
+    },
+
+    //  Trigger search  text length > 2
+    async handleSearch() {
+      if (this.searchName.length > 2) {
+        this.searchUsers();
+      } else if (this.searchName.length === 0) {
+        this.getUsers();
+      }
+    },
+
+    // Search by name
+    async searchUsers() {
+      try {
+        const res = await axios.get("http://localhost:3000/api/users/search", {
+          params: {
+            first_name: this.searchName || null,
+          },
+        });
+        this.users = res.data;
+        this.page = 1; // reset to first page
+      } catch (err) {
+        console.error("Error searching users:", err);
+        this.users = [];
+      }
+    },
+
+
+
+    //  sort to Name and DOB...........
+    applySort() {
+      if (this.sortKey === "first_name") {
+        this.users.sort((x, y) =>
+          x.first_name.toLowerCase().localeCompare(y.first_name.toLowerCase())
+        );
+      } else if (this.sortKey === "dob") {
+        this.users.sort((x, y) => {
+          const A = new Date(x.dob.split("-").reverse().join("-"));
+          const B = new Date(y.dob.split("-").reverse().join("-"));
+          return A - B;
+        });
+      }
+      this.page = 1; // reset to first page after sort
+    },
+
+    // Get all users
     async getUsers() {
       try {
-        const res = await axios.get(`http://localhost:3000/api/users/getAll`);
+        const res = await axios.get("http://localhost:3000/api/users/getAll");
         this.users = res.data;
+        this.page = 1;
       } catch (err) {
         console.error("Error fetching users:", err);
       }
     },
+
+    // Format date (YYYY-MM-DD → DD/MM/YYYY)
     formatDate(dateStr) {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("en-GB");
+      if (!dateStr) return "";
+      const [year, month, day] = dateStr.split("-");
+      return `${day}/${month}/${year}`;
     },
+
     editUser(user) {
       this.$router.push(`/create/${user.user_id}`);
     },
