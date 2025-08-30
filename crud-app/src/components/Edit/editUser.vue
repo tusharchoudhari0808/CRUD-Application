@@ -96,7 +96,7 @@ export default {
   async mounted() {
     try {
       //  Get user by ID
-      const res = await axios.get(`http://localhost:3000/api/users/get/${this.id}`);
+      const res = await axios.get(`http://localhost:3000/api/users/${this.id}`);
       const u = res.data.data;
 
       //  Match frontend camelCase with backend snake_case

@@ -162,7 +162,7 @@ export default {
     async fetchUsers() {
       try {
         this.loading = true;
-        const res = await axios.get("http://localhost:3000/api/users/page", {
+        const res = await axios.get("http://localhost:3000/api/users/page/list", {
           params: {
             page: this.page,
             limit: this.limit,
@@ -197,7 +197,7 @@ export default {
       if (confirm("Are you sure you want to delete this user?")) {
         try {
           this.loading = true;
-          await axios.delete(`http://localhost:3000/api/users/delete/${id}`);
+          await axios.delete(`http://localhost:3000/api/users/${id}`);
           this.fetchUsers();
         } catch (err) {
           console.error("Error deleting user:", err);

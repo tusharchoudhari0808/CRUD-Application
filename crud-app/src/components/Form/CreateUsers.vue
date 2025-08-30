@@ -128,7 +128,7 @@ export default {
     async loadUser() {
       try {
         const res = await axios.get(
-          `http://localhost:3000/api/users/get/${this.id}`
+          `http://localhost:3000/api/users/${this.id}`
         );
         const user = res.data;
         this.firstName = user.first_name;

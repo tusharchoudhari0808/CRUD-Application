@@ -40,7 +40,7 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-//  Get User by ID
+//  Get User by ID with edite
 exports.getUserById = async (req, res) => {
   const { id } = req.params;
 
